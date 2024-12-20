@@ -48,7 +48,8 @@ L'objectif est de fournir une plateforme équitable et fiable pour évaluer les 
 - **Utilisateurs :**
   - Note globale en étoiles.
   - Accès à un résumé des avis et des points forts/faibles des modèles.
-
+- **Intelligence Artificielle :**
+  - Synthèse des avis en utilisant l'IA.
 ---
 
 ## **Technologies suggérées**
