@@ -1,5 +1,3 @@
-package com.bl.rustyze
-
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -12,9 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.bl.rustyze.LoginScreen
+import com.bl.rustyze.ui.HomeScreen
+import com.bl.rustyze.ui.SearchScreen
 import com.bl.rustyze.ui.theme.RustyzeTheme
 import com.google.firebase.auth.FirebaseAuth
-
 
 class MainActivity : ComponentActivity() {
 
@@ -29,19 +33,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             RustyzeTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     if (firebaseAuth.currentUser != null) {
                         // User is already logged in
-                        WelcomeScreen(
-                            name = firebaseAuth.currentUser?.email ?: "User",
-                            onLogout = {
-                                firebaseAuth.signOut()
-                                Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
-                                startActivity(Intent(this, MainActivity::class.java))
-                                finish()
-                            },
-                            modifier = Modifier.padding(innerPadding)
-                        )
+                        HomeScreen()
+//                        NavHost(navController = navController, startDestination = "home") {
+//                            composable("home") {
+//                                HomeScreen(navController)
+//                            }
+//                            composable("search") {
+//                                SearchScreen()
+//                            }
+//                        }
                     } else {
                         LoginScreen(
                             onAuthSuccess = {
@@ -60,40 +64,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun WelcomeScreen(name: String, onLogout: () -> Unit, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Welcome, $name!",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = onLogout,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "Logout")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WelcomeScreenPreview() {
-    RustyzeTheme {
-        WelcomeScreen(
-            name = "User",
-            onLogout = {}
-        )
     }
 }
