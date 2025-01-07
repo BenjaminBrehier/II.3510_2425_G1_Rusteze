@@ -17,18 +17,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.bl.rustyze.R
 import com.bl.rustyze.ui.components.VehicleCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Rustyze") },
                 actions = {
                     IconButton(onClick = {
+                        navController.navigate("search") // Naviguer vers l'écran de recherche
                     }) {
                         Icon(Icons.Filled.Search, contentDescription = "Search")
                     }

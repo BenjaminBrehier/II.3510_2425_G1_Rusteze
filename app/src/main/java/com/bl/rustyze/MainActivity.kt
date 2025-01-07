@@ -1,3 +1,5 @@
+package com.bl.rustyze
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -6,15 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.bl.rustyze.LoginScreen
 import com.bl.rustyze.ui.HomeScreen
 import com.bl.rustyze.ui.SearchScreen
 import com.bl.rustyze.ui.theme.RustyzeTheme
@@ -37,21 +34,20 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     if (firebaseAuth.currentUser != null) {
                         // User is already logged in
-                        HomeScreen()
-//                        NavHost(navController = navController, startDestination = "home") {
-//                            composable("home") {
-//                                HomeScreen(navController)
-//                            }
-//                            composable("search") {
-//                                SearchScreen()
-//                            }
-//                        }
+                        NavHost(navController = navController, startDestination = "home") {
+                            composable("home") {
+                                HomeScreen(navController)
+                            }
+                            composable("search") {
+                                SearchScreen()
+                            }
+                        }
                     } else {
                         LoginScreen(
                             onAuthSuccess = {
                                 val user = firebaseAuth.currentUser
                                 Toast.makeText(this, "Welcome ${user?.email}", Toast.LENGTH_SHORT).show()
-                                // Redirect to MainActivity after successful login
+                                // Redirect to com.bl.rustyze.MainActivity after successful login
                                 startActivity(Intent(this, MainActivity::class.java))
                                 finish()
                             },
