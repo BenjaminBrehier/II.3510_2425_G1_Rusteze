@@ -4,7 +4,12 @@ import org.json.JSONObject
 
 data class Vehicle(
     val make: String,
-    val model: String
+    val model: String,
+    val year: Int,
+    val fuelType: String,
+    val cylinders: Int,
+    val trany: String,
+    val comb08: Int
 )
 
 data class ApiResponse(
@@ -22,7 +27,12 @@ fun parseVehicles(jsonResponse: String): List<Vehicle> {
         val result = resultsArray.getJSONObject(i)
         val make = result.optString("make", "Unknown")
         val model = result.optString("model", "Unknown")
-        vehicles.add(Vehicle(make, model))
+        val year = result.optInt("year", 0)
+        val fuelType = result.optString("fuelType", "Unknown")
+        val cylinders = result.optInt("cylinders", 0)
+        val trany = result.optString("trany", "Unknown")
+        val comb08 = result.optInt("comb08", 0)
+        vehicles.add(Vehicle(make, model, year, fuelType, cylinders, trany, comb08))
     }
     return vehicles
 }

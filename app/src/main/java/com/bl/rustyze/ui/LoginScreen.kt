@@ -1,7 +1,5 @@
-package com.bl.rustyze
+package com.bl.rustyze.ui
 
-import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
