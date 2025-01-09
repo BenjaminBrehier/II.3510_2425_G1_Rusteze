@@ -29,6 +29,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
+google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.0.1" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version = "21.0.1" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

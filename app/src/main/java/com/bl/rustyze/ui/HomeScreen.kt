@@ -1,5 +1,7 @@
 package com.bl.rustyze.ui
 
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,28 +14,73 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
+import com.bl.rustyze.MainActivity
 import com.bl.rustyze.R
 import com.bl.rustyze.ui.components.VehicleCard
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
+    var expanded by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Rustyze") },
                 actions = {
                     IconButton(onClick = {
-                        navController.navigate("search") // Naviguer vers l'écran de recherche
+                        navController.navigate("search")
                     }) {
                         Icon(Icons.Filled.Search, contentDescription = "Search")
+                    }
+
+                    // Icône de profil avec menu déroulant
+                    Box(
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.TopEnd)
+                    ) {
+                        IconButton(onClick = { expanded = !expanded }) {
+                            Icon(Icons.Filled.Person, contentDescription = "Profile")
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Profile") },
+                                onClick = {
+                                    expanded = false
+                                    navController.navigate("profile")
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Logout") },
+                                onClick = {
+                                    expanded = false
+                                    firebaseAuth.signOut()
+                                    Toast.makeText(navController.context, "Logged out", Toast.LENGTH_SHORT).show()
+
+                                    // Redirige vers l'écran de connexion
+                                    val intent = Intent(navController.context, MainActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    startActivity(navController.context, intent, null)
+                                }
+                            )
+                        }
                     }
                 }
             )
@@ -70,7 +117,7 @@ fun HomeScreen(navController: NavController) {
                             color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(16.dp)
                         ),
-                    content= {
+                    content = {
                         LazyRow {
                             items(5) { index ->
                                 TopRatedCard(
