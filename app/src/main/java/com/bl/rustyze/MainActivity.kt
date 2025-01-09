@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                         // User is already logged in
                         NavHost(navController = navController, startDestination = "home") {
                             composable("home") {
-                                HomeScreen(navController)
+                                HomeScreen(navController, firebaseAuth)
                             }
                             composable("search") {
                                 SearchScreen(navController, apiList)

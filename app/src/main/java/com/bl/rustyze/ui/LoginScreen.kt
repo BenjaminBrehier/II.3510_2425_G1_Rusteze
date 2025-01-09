@@ -1,15 +1,24 @@
 package com.bl.rustyze.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.bl.rustyze.R
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 @Composable
 fun LoginScreen(
@@ -20,6 +29,45 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLogin by remember { mutableStateOf(true) } // Toggle between login and register
+    val context = LocalContext.current
+
+    // Fonction pour connecter avec Firebase en utilisant le compte Google
+    fun firebaseAuthWithGoogle(account: GoogleSignInAccount, onAuthSuccess: () -> Unit, onAuthFailure: (String) -> Unit) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+        val auth = FirebaseAuth.getInstance()
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onAuthSuccess()
+                } else {
+                    onAuthFailure("Google authentication failed")
+                }
+            }
+    }
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                firebaseAuthWithGoogle(account, onAuthSuccess, onAuthFailure)
+            } catch (e: ApiException) {
+                onAuthFailure("Google sign-in failed: ${e.message}")
+            }
+        }
+    )
+
+
+    fun startGoogleSignIn() {
+        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.default_web_client_id)) // Utilisez votre client ID Firebase
+            .requestEmail()
+            .build()
+
+        val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
+        googleSignInLauncher.launch(googleSignInClient.signInIntent)
+    }
 
     Column(
         modifier = modifier
@@ -95,14 +143,17 @@ fun LoginScreen(
                 text = if (isLogin) "Don't have an account? Register" else "Already have an account? Login"
             )
         }
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen(
-        onAuthSuccess = {},
-        onAuthFailure = {}
-    )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        AndroidView(
+            factory = { context ->
+                com.google.android.gms.common.SignInButton(context).apply {
+                    setSize(com.google.android.gms.common.SignInButton.SIZE_WIDE)
+                    setOnClickListener { startGoogleSignIn() }
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }
