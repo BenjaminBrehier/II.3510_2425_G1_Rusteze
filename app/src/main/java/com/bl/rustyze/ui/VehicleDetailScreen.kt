@@ -1,5 +1,6 @@
 package com.bl.rustyze.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,9 +13,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.bl.rustyze.data.models.Vehicle
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlin.math.log
 
 @Composable
 fun VehicleDetailScreen(vehicle: Vehicle) {
+    val mAuth = FirebaseAuth.getInstance()
+    val user: FirebaseUser? = mAuth.currentUser
+    Log.i("VehicleDetailScreen", "user: $user")
+    val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    Log.i("VehicleDetailScreen", "db: $db")
+
+    val userData: MutableMap<String, Any> = HashMap()
+    Log.i("VehicleDetailScreen", "userData: $userData")
+
+    if (user != null) {
+    db.collection("users").document(user.uid).get()
+        .addOnSuccessListener { document ->
+            if (document != null) {
+                val vehiclesLastSeen = document.get("vehiclesLastSeen") as? MutableList<String> ?: mutableListOf()
+                val vehicleName = "${vehicle.make} ${vehicle.model}"
+                if (!vehiclesLastSeen.contains(vehicleName)) {
+                    vehiclesLastSeen.add(vehicleName)
+                    userData["vehiclesLastSeen"] = vehiclesLastSeen
+                    db.collection("users").document(user.uid).set(userData)
+                }
+            }
+        }
+}
+
     Column(
         modifier = Modifier
             .fillMaxSize()

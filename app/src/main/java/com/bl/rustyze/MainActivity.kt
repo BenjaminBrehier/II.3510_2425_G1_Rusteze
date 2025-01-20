@@ -2,6 +2,7 @@ package com.bl.rustyze
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,7 +54,7 @@ class MainActivity : ComponentActivity() {
                 // Récupération des données si la liste est vide
                 LaunchedEffect(Unit) {
                     if (apiList.isEmpty()) {
-                        val apiUrl = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/all-vehicles-model/records?limit=50"
+                        val apiUrl = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/all-vehicles-model/records?limit=100"
                         try {
                             val response = withContext(Dispatchers.IO) {
                                 val url = URI.create(apiUrl).toURL()
@@ -74,8 +75,10 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
-                            val vehicles = parseVehicles(response)
-                            apiList = vehicles
+                        val vehicles = parseVehicles(response)
+                            .filter { it.make.split(" ").size == 1 && it.model.split(" ").size == 1 }
+                            .distinctBy { it.make to it.model }
+                        apiList = vehicles
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -102,9 +105,10 @@ class MainActivity : ComponentActivity() {
                             ) { backStackEntry ->
                                 val make = backStackEntry.arguments?.getString("make") ?: ""
                                 val model = backStackEntry.arguments?.getString("model") ?: ""
-
+                                Log.i("MainActivity", "Vehicle: $make $model")
                                 // Rechercher le véhicule correspondant dans apiList
                                 val vehicle = apiList.find { it.make == make && it.model == model }
+
                                 if (vehicle != null) {
                                     VehicleDetailScreen(vehicle)
                                 } else {

@@ -1,6 +1,7 @@
 package com.bl.rustyze.ui
 
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,11 +31,69 @@ import com.bl.rustyze.MainActivity
 import com.bl.rustyze.R
 import com.bl.rustyze.ui.components.VehicleCard
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+
+private var mAuth: FirebaseAuth? = null
+
+fun createUserDocument(userId: String?, db: FirebaseFirestore, userData: MutableMap<String, Any>) {
+    db.collection("users").document(userId!!)
+        .set(userData)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
     var expanded by remember { mutableStateOf(false) }
+    val vehiclesLastSeenData = remember { mutableStateOf(emptyList<Map<String, String>>()) }
+    mAuth = FirebaseAuth.getInstance()
+    val user: FirebaseUser? = mAuth!!.currentUser
+    val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    if (user != null) {
+        db.collection("users").document(user.uid).get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val vehicleIds = document.get("vehiclesLastSeen") as? List<String> ?: emptyList()
+                    val vehicles = mutableListOf<Map<String, String>>()
+
+                    vehicleIds.forEach { vehicleId ->
+                        Log.i("Rustyze", "vehicleId: $vehicleId")
+                        db.collection("vehicles").document(vehicleId).collection("comments").get()
+                            .addOnSuccessListener { commentsQuerySnapshot ->
+                                var totalStars = 0
+                                var totalComments = 0
+
+                                // compute the rusty meter percentage
+                                for (commentDoc in commentsQuerySnapshot.documents) {
+                                    Log.i("Rustyze", "commentDoc: $commentDoc")
+                                    val stars = commentDoc.getLong("stars")?.toInt()
+                                    if (stars != null && stars in 0..5) {
+                                        totalStars += stars
+                                        totalComments++
+                                    }
+                                }
+
+                                val rustyMeterPercentage = if (totalComments > 0) {
+                                    (totalStars * 100) / (totalComments * 5)
+                                } else {
+                                    0
+                                }
+
+                                vehicles.add(
+                                    mapOf(
+                                        "name" to vehicleId,
+                                        "rustyMeter" to "$rustyMeterPercentage%"
+                                    )
+                                )
+                                Log.i("Rustyze", "vehicles: $vehicles")
+                                vehiclesLastSeenData.value = vehicles
+                            }
+                    }
+                }
+            }
+    }
+
 
     Scaffold(
         topBar = {
@@ -47,7 +106,7 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                         Icon(Icons.Filled.Search, contentDescription = "Search")
                     }
 
-                    // Icône de profil avec menu déroulant
+                    // Profile icon with dropdown menu
                     Box(
                         modifier = Modifier
                             .wrapContentSize(Alignment.TopEnd)
@@ -74,7 +133,7 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                                     firebaseAuth.signOut()
                                     Toast.makeText(navController.context, "Logged out", Toast.LENGTH_SHORT).show()
 
-                                    // Redirige vers l'écran de connexion
+                                    // Redirect to login screen
                                     val intent = Intent(navController.context, MainActivity::class.java)
                                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                                     startActivity(navController.context, intent, null)
@@ -101,7 +160,7 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                 .padding(padding)
                 .fillMaxSize()
         ) {
-            // Section Top Rated
+            // Top Rated Section
             item {
                 Text(
                     text = "Top Rated",
@@ -130,7 +189,7 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                 )
             }
 
-            // Section Seen Recently
+            // Seen Recently Section
             item {
                 Text(
                     text = "Seen Recently",
@@ -138,21 +197,14 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                     modifier = Modifier.padding(16.dp)
                 )
             }
-            items(3) { index ->
+            items(vehiclesLastSeenData.value.takeLast(3).size) { index ->
+                val vehicle = vehiclesLastSeenData.value.takeLast(3)[index]
                 VehicleCard(
                     modifier = Modifier.clickable {
-                        navController.navigate("details/Dodge/Spirit")
+                        navController.navigate("details/${vehicle["name"]?.split(" ")?.get(0)}/${vehicle["name"]?.split(" ")?.get(1)}")
                     },
-                    vehicleName = when (index) {
-                        0 -> "Peugeot 1007"
-                        1 -> "Moto Guzzi V7"
-                        else -> "Seat Leon"
-                    },
-                    rustyMeter = when (index) {
-                        0 -> "20%"
-                        1 -> "90%"
-                        else -> "60%"
-                    }
+                    vehicleName = vehicle["name"] ?: "Unknown",
+                    rustyMeter = vehicle["rustyMeter"] ?: "Unknown"
                 )
             }
         }

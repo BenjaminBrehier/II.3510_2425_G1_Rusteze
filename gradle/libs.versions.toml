@@ -10,6 +10,7 @@ activityCompose = "1.9.3"
 composeBom = "2024.04.01"
 firebaseAuthKtx = "23.1.0"
 navigationCompose = "2.8.5"
+firebaseFirestoreKtx = "25.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,6 +32,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
 google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.0.1" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version = "21.0.1" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

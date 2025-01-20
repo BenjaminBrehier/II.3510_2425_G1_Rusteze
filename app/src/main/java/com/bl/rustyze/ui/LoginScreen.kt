@@ -32,8 +32,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.OAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun LoginScreen(
@@ -157,6 +159,16 @@ fun LoginScreen(
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
+                                var mAuth = FirebaseAuth.getInstance();
+                                val user: FirebaseUser? = mAuth!!.currentUser
+                                val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+
+                                val userData: MutableMap<String, Any> = HashMap()
+                                userData["vehiclesLastSeen"] = ArrayList<String>()
+                                if (user != null) {
+                                    db.collection("users").document(user.uid!!)
+                                        .set(userData!!)
+                                }
                                 onAuthSuccess()
                             } else {
                                 onAuthFailure(task.exception?.message ?: "Unknown error")
