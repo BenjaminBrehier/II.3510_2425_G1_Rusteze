@@ -1,8 +1,12 @@
 package com.bl.rustyze.ui
 
 import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -17,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +37,8 @@ import com.bl.rustyze.data.models.Vehicle
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -40,12 +47,14 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
     var rustyMeterPercentage by remember { mutableStateOf(0) }
     var userComment by remember { mutableStateOf("") }
-    var comments = remember { mutableStateOf(mutableListOf<Map<String, *>>()) }
+    val comments = remember { mutableStateOf(mutableListOf<Map<String, *>>()) }
     var stars by remember { mutableStateOf(-1) }
     val mAuth = FirebaseAuth.getInstance()
     val user: FirebaseUser? = mAuth.currentUser
     val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    var context = LocalContext.current
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var listenerRegistration: ListenerRegistration? = null
 
     if (user != null) {
     // Add the vehicle to the user's last seen list
@@ -111,6 +120,65 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
         context.startActivity(Intent.createChooser(shareIntent, shareBy))
     }
 
+    fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "comment_channel",
+                "Comment Notifications",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifications for new comments"
+            }
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun sendNotification(comment: String) {
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val notification: Notification = Notification.Builder(context, "comment_channel")
+            .setContentTitle("New Comment on ${vehicle.make} ${vehicle.model}")
+            .setContentText(comment)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .build()
+
+        notificationManager.notify(1, notification)
+    }
+
+    fun listenForComments() {
+        listenerRegistration?.remove()
+        listenerRegistration = db.collection("vehicles")
+            .document("${vehicle.make} ${vehicle.model}")
+            .addSnapshotListener { documentSnapshot, error ->
+                if (error != null) {
+                    Log.e("Rustyze", "Error listening for comments: ", error)
+                    return@addSnapshotListener
+                }
+
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    val newComments =
+                        documentSnapshot.get("comments") as? List<Map<String, *>> ?: emptyList()
+
+                    // Compare new comments with the current state
+                    if (newComments.size > comments.value.size) {
+                        val newComment = newComments.lastOrNull()
+                        val content = newComment?.get("content") as? String ?: "New comment added"
+                        sendNotification(content)
+                    }
+
+                    comments.value = newComments.toMutableList()
+                }
+            }
+    }
+
+    coroutineScope.launch {
+        createNotificationChannel()
+        listenForComments()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -154,15 +222,6 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Header
-//            Text(
-//                text = "${vehicle.make} ${vehicle.model}",
-//                style = MaterialTheme.typography.headlineLarge.copy(
-//                    color = MaterialTheme.colorScheme.primary,
-//                    fontWeight = FontWeight.Bold
-//                ),
-//                modifier = Modifier.padding(bottom = 8.dp)
-//            )
 
             Spacer(modifier = Modifier.height(50.dp))
             // Vehicle Details
