@@ -3,6 +3,8 @@ package com.bl.rustyze.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -35,28 +37,41 @@ fun SearchScreen(
         }
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        TextField(
-            value = query,
-            onValueChange = { query = it },
-            label = { Text("Search for a vehicle") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn {
-            items(suggestions.size) { index ->
-                val vehicle = suggestions[index]
-                Text(
-                    text = "${vehicle.make} ${vehicle.model}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            navController.navigate("details/${vehicle.make}/${vehicle.model}")
-                        }
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = true,
+                    onClick = { navController.navigate("home") },
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
+                    label = { Text("Home") }
                 )
+            }
+        }
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            TextField(
+                value = query,
+                onValueChange = { query = it },
+                label = { Text("Search for a vehicle") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            LazyColumn {
+                items(suggestions.size) { index ->
+                    val vehicle = suggestions[index]
+                    Text(
+                        text = "${vehicle.make} ${vehicle.model}",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clickable {
+                                navController.navigate("details/${vehicle.make}/${vehicle.model}")
+                            }
+                    )
+                }
             }
         }
     }

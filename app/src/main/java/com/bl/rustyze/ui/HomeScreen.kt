@@ -148,7 +148,7 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
             NavigationBar {
                 NavigationBarItem(
                     selected = true,
-                    onClick = { /* Home Action */ },
+                    onClick = { navController.navigate("home") },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
                     label = { Text("Home") }
                 )

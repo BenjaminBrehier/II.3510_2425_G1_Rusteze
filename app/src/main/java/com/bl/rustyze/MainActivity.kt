@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
                                 val vehicle = apiList.find { it.make == make && it.model == model }
 
                                 if (vehicle != null) {
-                                    VehicleDetailScreen(vehicle)
+                                    VehicleDetailScreen(vehicle, navController)
                                 } else {
                                     Text(text = "Vehicle not found", color = Color.Red)
                                 }
