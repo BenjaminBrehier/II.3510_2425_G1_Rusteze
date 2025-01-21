@@ -44,20 +44,23 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
     val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     if (user != null) {
-        // Add the vehicle to the user's last seen list
-        db.collection("users").document(user.uid).get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    val vehiclesLastSeen = document.get("vehiclesLastSeen") as? MutableList<String> ?: mutableListOf()
-                    val vehicleName = "${vehicle.make} ${vehicle.model}"
-                    if (!vehiclesLastSeen.contains(vehicleName)) {
-                        vehiclesLastSeen.add(vehicleName)
-                        val userData: MutableMap<String, Any> = HashMap()
-                        userData["vehiclesLastSeen"] = vehiclesLastSeen
-                        db.collection("users").document(user.uid).set(userData)
+    // Add the vehicle to the user's last seen list
+    db.collection("users").document(user.uid).get()
+        .addOnSuccessListener { document ->
+            if (document != null) {
+                val vehiclesLastSeen = document.get("vehiclesLastSeen") as? MutableList<String> ?: mutableListOf()
+                val vehicleName = "${vehicle.make} ${vehicle.model}"
+                if (!vehiclesLastSeen.contains(vehicleName)) {
+                    if (vehiclesLastSeen.size >= 3) {
+                        vehiclesLastSeen.removeAt(0)
                     }
+                    vehiclesLastSeen.add(vehicleName)
+                    val userData: MutableMap<String, Any> = HashMap()
+                    userData["vehiclesLastSeen"] = vehiclesLastSeen
+                    db.collection("users").document(user.uid).set(userData)
                 }
             }
+        }
     }
 
     val vehicleDocRef = db.collection("vehicles").document("${vehicle.make} ${vehicle.model}")

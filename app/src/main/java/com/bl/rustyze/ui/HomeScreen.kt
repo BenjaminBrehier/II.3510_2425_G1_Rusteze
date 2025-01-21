@@ -56,17 +56,19 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
 
                     vehicleIds.forEach { vehicleId ->
                         Log.i("Rustyze", "vehicleId: $vehicleId")
-                        db.collection("vehicles").document(vehicleId).collection("comments").get()
-                            .addOnSuccessListener { commentsQuerySnapshot ->
+                        val vehicleDocRef = db.collection("vehicles").document(vehicleId)
+
+                        vehicleDocRef.get().addOnSuccessListener { document ->
+                            if (document != null) {
+                                val fetchedComments =
+                                    document.get("comments") as? MutableList<Map<String, *>> ?: mutableListOf()
                                 var totalStars = 0
                                 var totalComments = 0
 
-                                // compute the rusty meter percentage
-                                for (commentDoc in commentsQuerySnapshot.documents) {
-                                    Log.i("Rustyze", "commentDoc: $commentDoc")
-                                    val stars = commentDoc.getLong("stars")?.toInt()
-                                    if (stars != null && stars in 0..5) {
-                                        totalStars += stars
+                                for (comment in fetchedComments) {
+                                    val commentStars = comment["stars"] as? Long
+                                    if (commentStars != null && commentStars in 0..5) {
+                                        totalStars += commentStars.toInt()
                                         totalComments++
                                     }
                                 }
@@ -85,7 +87,12 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                                 )
                                 Log.i("Rustyze", "vehicles: $vehicles")
                                 vehiclesLastSeenData.value = vehicles
+                            } else {
+                                Log.w("Rustyze", "Document for vehicleId $vehicleId not found")
                             }
+                        }.addOnFailureListener { exception ->
+                            Log.e("Rustyze", "Error fetching document for vehicleId $vehicleId", exception)
+                        }
                     }
                 }
             }
