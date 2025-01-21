@@ -1,4 +1,41 @@
 <resources>
     <string name="app_name">Rustyze</string>
     <string name="default_web_client_id">977217272478-if3pipthk1gafh9kis6dsbofqc2tl7t0.apps.googleusercontent.com</string>
+    <string name="logout">Logout</string>
+    <string name="yourComments">Your Comments</string>
+    <string name="vehicle">Vehicle</string>
+    <string name="confirmDeletionTitle">Confirm Deletion</string>
+    <string name="confirmDeletionMessage">Are you sure you want to delete this comment?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="navHome">Home</string>
+    <string name="navProfile">Profile</string>
+
+    <string name="seenRecently">Seen Recently</string>
+    <string name="topRated">Top Rated</string>
+
+    <string name="rustyMeter">RustyMeter</string>
+
+    <string name="specsYear">Year</string>
+    <string name="specsFuel">Fuel Type</string>
+    <string name="specsCylinders">Cylinders</string>
+    <string name="specsTransmission">Transmission</string>
+    <string name="specsCombined">Combined MPG</string>
+
+    <string name="comments">Comments</string>
+    <string name="yourComment">Your Comment</string>
+    <string name="author">Author</string>
+    <string name="rating">Rating</string>
+
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="switchRegister">Don\'t have an account? Register</string>
+    <string name="switchLogin">Already have an account? Login</string>
+
+    <string name="loginGoogle">Login with Google</string>
+    <string name="loginX">Login with X</string>
 </resources>

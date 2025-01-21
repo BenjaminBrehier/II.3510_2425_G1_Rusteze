@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -115,7 +116,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if (isLogin) "Login" else "Register",
+            text = if (isLogin) stringResource(id = R.string.login) else stringResource(id = R.string.register),
             style = MaterialTheme.typography.headlineMedium
         )
 
@@ -124,7 +125,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(id = R.string.email)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth()
         )
@@ -134,7 +135,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(id = R.string.password)) },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth()
@@ -178,7 +179,7 @@ fun LoginScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = if (isLogin) "Login" else "Register")
+            Text(text = if (isLogin) stringResource(id = R.string.login) else stringResource(id = R.string.register))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -188,14 +189,14 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = if (isLogin) "Don't have an account? Register" else "Already have an account? Login"
+                text = if (isLogin) stringResource(id = R.string.switchRegister) else stringResource(id = R.string.switchLogin)
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         SocialLoginButton(
-            text = "Login with Google",
+            text = stringResource(id = R.string.loginGoogle),
             backgroundColor = Color(0xFF3F85F4),
             icon = ImageVector.vectorResource(id = R.drawable.ic_google),
             onClick = { startGoogleSignIn() }
@@ -204,7 +205,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         SocialLoginButton(
-            text = "Login with X",
+            text = stringResource(id = R.string.loginX),
             backgroundColor = Color.Black,
             icon = ImageVector.vectorResource(id = R.drawable.ic_x),
             onClick = { startTwitterSignIn()}

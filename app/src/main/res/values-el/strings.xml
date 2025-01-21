@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rustyze</string>
+    <string name="default_web_client_id">977217272478-if3pipthk1gafh9kis6dsbofqc2tl7t0.apps.googleusercontent.com</string>
+    <string name="logout">Αποσύνδεση</string>
+    <string name="yourComments">Τα σχόλιά σας</string>
+    <string name="vehicle">Όχημα</string>
+    <string name="confirmDeletionTitle">Επιβεβαίωση Διαγραφής</string>
+    <string name="confirmDeletionMessage">Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το σχόλιο;</string>
+    <string name="yes">Ναι</string>
+    <string name="no">Όχι</string>
+
+    <string name="navHome">Αρχική</string>
+    <string name="navProfile">Προφίλ</string>
+
+    <string name="seenRecently">Πρόσφατα Εμφανισμένα</string>
+    <string name="topRated">Κορυφαία Βαθμολογημένα</string>
+
+    <string name="rustyMeter">RustyΜετρητής</string>
+
+    <string name="specsYear">Έτος</string>
+    <string name="specsFuel">Τύπος Καυσίμου</string>
+    <string name="specsCylinders">Κύλινδροι</string>
+    <string name="specsTransmission">Κιβώτιο Ταχυτήτων</string>
+    <string name="specsCombined">Συνδυασμένο MPG</string>
+
+    <string name="comments">Σχόλια</string>
+    <string name="yourComment">Το σχόλιό σας</string>
+    <string name="author">Συγγραφέας</string>
+    <string name="rating">Βαθμολογία</string>
+
+    <string name="login">Σύνδεση</string>
+    <string name="register">Εγγραφή</string>
+
+    <string name="email">Email</string>
+    <string name="password">Κωδικός Πρόσβασης</string>
+    <string name="switchRegister">Δεν έχετε λογαριασμό; Εγγραφείτε</string>
+    <string name="switchLogin">Έχετε ήδη λογαριασμό; Συνδεθείτε</string>
+
+    <string name="loginGoogle">Σύνδεση με Google</string>
+    <string name="loginX">Σύνδεση με X</string>
+</resources>

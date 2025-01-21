@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
@@ -116,14 +117,14 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                             modifier = Modifier.background(MaterialTheme.colorScheme.surface)
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Profile") },
+                                text = { Text(stringResource(id = R.string.navProfile)) },
                                 onClick = {
                                     expanded = false
                                     navController.navigate("profile")
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Logout") },
+                                text = { Text(stringResource(id = R.string.logout)) },
                                 onClick = {
                                     expanded = false
                                     firebaseAuth.signOut()
@@ -146,7 +147,7 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                     selected = true,
                     onClick = { navController.navigate("home") },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
-                    label = { Text("Home") }
+                    label = { Text(stringResource(id = R.string.navHome)) }
                 )
             }
         }
@@ -159,7 +160,7 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
             // Top Rated Section
             item {
                 Text(
-                    text = "Top Rated",
+                    text = stringResource(id = R.string.topRated),
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -188,7 +189,7 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
             // Seen Recently Section
             item {
                 Text(
-                    text = "Seen Recently",
+                    text = stringResource(id = R.string.seenRecently),
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(16.dp)
                 )

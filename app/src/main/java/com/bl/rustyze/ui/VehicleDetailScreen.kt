@@ -19,11 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.bl.rustyze.MainActivity
+import com.bl.rustyze.R
 import com.bl.rustyze.data.models.Vehicle
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -89,7 +91,7 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                     selected = true,
                     onClick = { navController.navigate("home") },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
-                    label = { Text("Home") }
+                    label = {Text(stringResource(id = R.string.navHome))}
                 )
             }
         }
@@ -128,27 +130,27 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                 ) {
                     VehicleDetailItem(
                         icon = Icons.Default.CheckCircle,
-                        label = "Year",
+                        label = stringResource(id = R.string.specsYear),
                         value = vehicle.year.toString()
                     )
                     VehicleDetailItem(
                         icon = Icons.Default.Done,
-                        label = "Fuel Type",
+                        label = stringResource(id = R.string.specsFuel),
                         value = vehicle.fuelType ?: "Unknown"
                     )
                     VehicleDetailItem(
                         icon = Icons.Default.Lock,
-                        label = "Cylinders",
+                        label = stringResource(id = R.string.specsCylinders),
                         value = vehicle.cylinders?.toString() ?: "N/A"
                     )
                     VehicleDetailItem(
                         icon = Icons.Default.Settings,
-                        label = "Transmission",
+                        label = stringResource(id = R.string.specsTransmission),
                         value = vehicle.trany ?: "N/A"
                     )
                     VehicleDetailItem(
                         icon = Icons.Default.Call,
-                        label = "Combined MPG",
+                        label = stringResource(id = R.string.specsCombined),
                         value = vehicle.comb08?.toString() ?: "N/A"
                     )
                 }
@@ -156,7 +158,7 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
 
             // Rusty Meter
             Text(
-                text = "Rusty Meter: $rustyMeterPercentage%",
+                text = stringResource(id = R.string.rustyMeter) +": $rustyMeterPercentage%",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -164,7 +166,7 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
 
             // Comments Section
             Text(
-                text = "Comments",
+                text = stringResource(id = R.string.comments),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -193,11 +195,11 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                     ) {
                         Column(modifier = Modifier.padding(8.dp)) {
                             Text(
-                                text = "Author: $author",
+                                text = stringResource(id = R.string.author) + " : $author",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
-                                text = "Rating: $commentStars ★",
+                                text = stringResource(id = R.string.rating) + " : $commentStars ★",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(text = content, style = MaterialTheme.typography.bodySmall)
@@ -219,7 +221,7 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                     OutlinedTextField(
                         value = userComment,
                         onValueChange = { userComment = it },
-                        label = { Text("Your Comment") },
+                        label = { Text(stringResource(id = R.string.yourComment)) },
                         modifier = Modifier.weight(1f).padding(end = 8.dp)
                     )
 

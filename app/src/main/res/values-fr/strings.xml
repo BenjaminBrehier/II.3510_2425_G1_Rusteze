@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rustyze</string>
+    <string name="default_web_client_id">977217272478-if3pipthk1gafh9kis6dsbofqc2tl7t0.apps.googleusercontent.com</string>
+    <string name="logout">Déconnexion</string>
+    <string name="yourComments">Vos commentaires</string>
+    <string name="vehicle">Véhicule</string>
+    <string name="confirmDeletionTitle">Confirmer la suppression</string>
+    <string name="confirmDeletionMessage">Êtes-vous sûr de vouloir supprimer ce commentaire ?</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+
+    <string name="navHome">Accueil</string>
+    <string name="navProfile">Profil</string>
+
+    <string name="seenRecently">Vu récemment</string>
+    <string name="topRated">Les mieux notés</string>
+
+    <string name="rustyMeter">RustyMètre</string>
+
+    <string name="specsYear">Année</string>
+    <string name="specsFuel">Type de carburant</string>
+    <string name="specsCylinders">Cylindres</string>
+    <string name="specsTransmission">Transmission</string>
+    <string name="specsCombined">MPG combiné</string>
+
+    <string name="comments">Commentaires</string>
+    <string name="yourComment">Votre commentaire</string>
+    <string name="author">Auteur</string>
+    <string name="rating">Note</string>
+
+    <string name="login">Connexion</string>
+    <string name="register">S\'inscrire</string>
+
+    <string name="email">Email</string>
+    <string name="password">Mot de passe</string>
+    <string name="switchRegister">Pas encore de compte ? Inscrivez-vous</string>
+    <string name="switchLogin">Vous avez déjà un compte ? Connectez-vous</string>
+
+    <string name="loginGoogle">Connexion avec Google</string>
+    <string name="loginX">Connexion avec X</string>
+</resources>

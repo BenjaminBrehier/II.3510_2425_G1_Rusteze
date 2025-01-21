@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +56,7 @@ fun updateLocale(context: Context, languageCode: String) {
 @Composable
 fun ProfileScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
     val user: FirebaseUser? = firebaseAuth.currentUser
-    val languageOptions = listOf("English" to "en", "Français" to "fr", "Español" to "es")
+    val languageOptions = listOf("English" to "en", "Français" to "fr", "Greek" to "el")
     val selectedLanguage = remember { mutableStateOf(languageOptions[0]) }
     var expanded by remember { mutableStateOf(false) }
 
@@ -123,8 +124,8 @@ fun ProfileScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
     if (showConfirmationDialog && commentToDelete != null) {
         AlertDialog(
             onDismissRequest = { showConfirmationDialog = false },
-            title = { Text("Confirm Deletion") },
-            text = { Text("Are you sure you want to delete this comment?") },
+            title = { Text(stringResource(id = R.string.confirmDeletionTitle))},
+            text = { Text(stringResource(id = R.string.confirmDeletionMessage)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -132,12 +133,12 @@ fun ProfileScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                         showConfirmationDialog = false
                     }
                 ) {
-                    Text("Yes")
+                    Text(stringResource(id = R.string.yes))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showConfirmationDialog = false }) {
-                    Text("No")
+                    Text(stringResource(id = R.string.no))
                 }
             }
         )
@@ -150,7 +151,7 @@ fun ProfileScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                     selected = true,
                     onClick = { navController.navigate("home") },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
-                    label = { Text("Home") }
+                    label = { BasicText(stringResource(id = R.string.navHome)) }
                 )
             }
         },
@@ -242,7 +243,7 @@ fun ProfileScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                         tint = Color.White
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Logout", color = Color.White)
+                    Text(text = stringResource(id = R.string.logout), color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
