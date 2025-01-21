@@ -25,6 +25,7 @@ import com.bl.rustyze.data.models.Vehicle
 import com.bl.rustyze.data.models.parseVehicles
 import com.bl.rustyze.ui.HomeScreen
 import com.bl.rustyze.ui.LoginScreen
+import com.bl.rustyze.ui.ProfileScreen
 import com.bl.rustyze.ui.SearchScreen
 import com.bl.rustyze.ui.VehicleDetailScreen
 import com.bl.rustyze.ui.theme.RustyzeTheme
@@ -96,6 +97,9 @@ class MainActivity : ComponentActivity() {
                             composable("search") {
                                 SearchScreen(navController, apiList)
                             }
+                            composable("profile") {
+                                ProfileScreen(navController, firebaseAuth)
+                            }
                             composable(
                                 "details/{make}/{model}",
                                 arguments = listOf(
@@ -121,7 +125,7 @@ class MainActivity : ComponentActivity() {
                             onAuthSuccess = {
                                 val user = firebaseAuth.currentUser
                                 Toast.makeText(this, "Welcome ${user?.email}", Toast.LENGTH_SHORT).show()
-                                // Redirect to com.bl.rustyze.MainActivity after successful login
+                                // Redirect after successful login
                                 startActivity(Intent(this, MainActivity::class.java))
                                 finish()
                             },

@@ -33,13 +33,9 @@ import com.bl.rustyze.ui.components.VehicleCard
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Locale
 
 private var mAuth: FirebaseAuth? = null
-
-fun createUserDocument(userId: String?, db: FirebaseFirestore, userData: MutableMap<String, Any>) {
-    db.collection("users").document(userId!!)
-        .set(userData)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

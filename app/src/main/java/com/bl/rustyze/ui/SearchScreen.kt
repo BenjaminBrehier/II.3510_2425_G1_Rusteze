@@ -1,5 +1,6 @@
 package com.bl.rustyze.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,6 +21,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URI
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SearchScreen(
     navController: NavController,

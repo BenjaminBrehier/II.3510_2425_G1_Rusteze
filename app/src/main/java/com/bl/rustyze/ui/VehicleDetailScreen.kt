@@ -1,5 +1,6 @@
 package com.bl.rustyze.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
@@ -28,13 +29,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
-@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
     var rustyMeterPercentage by remember { mutableStateOf(0) }
-    var comments by remember { mutableStateOf(emptyList<Map<String, Any>>()) }
     var userComment by remember { mutableStateOf("") }
+    var comments = remember { mutableStateOf(mutableListOf<Map<String, *>>()) }
     var stars by remember { mutableStateOf(-1) }
     val mAuth = FirebaseAuth.getInstance()
     val user: FirebaseUser? = mAuth.currentUser
@@ -56,32 +57,30 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                 }
             }
     }
-    // Fetch comments and compute Rusty Meter
-    db.collection("vehicles").document("${vehicle.make} ${vehicle.model}").collection("comments").get()
-        .addOnSuccessListener { commentsQuerySnapshot ->
+
+    val vehicleDocRef = db.collection("vehicles").document("${vehicle.make} ${vehicle.model}")
+    vehicleDocRef.get().addOnSuccessListener { document ->
+        if (document != null) {
+            // Récupère la liste existante de commentaires
+            val fetchedComments =
+                document.get("comments") as? MutableList<Map<String, *>> ?: mutableListOf()
             var totalStars = 0
             var totalComments = 0
-            val fetchedComments = mutableListOf<Map<String, Any>>()
-
-            for (commentDoc in commentsQuerySnapshot.documents) {
-                val commentData = commentDoc.data
-                if (commentData != null) {
-                    fetchedComments.add(commentData)
-                    val stars = commentData["stars"] as? Long
-                    if (stars != null && stars in 1..5) {
-                        totalStars += stars.toInt()
-                        totalComments++
-                    }
+            for (comment in fetchedComments) {
+                val commentStars = comment["stars"] as? Long
+                if (commentStars != null && commentStars in 0..5) {
+                    totalStars += commentStars.toInt()
+                    totalComments++
                 }
             }
-
-            comments = fetchedComments
+            comments.value = fetchedComments
             rustyMeterPercentage = if (totalComments > 0) {
                 (totalStars * 100) / (totalComments * 5)
             } else {
                 0
             }
         }
+    }
 
     Scaffold(
         bottomBar = {
@@ -177,10 +176,10 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                     .fillMaxHeight(0.6f)
                     .padding(vertical = 8.dp)
             ) {
-                items(comments) { comment ->
+                items(comments.value) { comment ->
                     val author = comment["author"] as? String ?: "Anonymous"
                     val content = comment["content"] as? String ?: ""
-                    val stars = comment["stars"] as? Long ?: 0
+                    val commentStars = comment["stars"] as? Long ?: 0
 
                     Card(
                         modifier = Modifier
@@ -198,7 +197,7 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
-                                text = "Rating: $stars ★",
+                                text = "Rating: $commentStars ★",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(text = content, style = MaterialTheme.typography.bodySmall)
@@ -269,14 +268,46 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                                     "content" to userComment,
                                     "stars" to stars
                                 )
-                                db.collection("vehicles")
-                                    .document("${vehicle.make} ${vehicle.model}")
-                                    .collection("comments").add(commentData)
-                                    .addOnSuccessListener {
-                                        Log.i("Rustyze", "Comment added successfully")
-                                        userComment = ""
-                                        stars = 0
+                                val vehicleDocRef = db.collection("vehicles").document("${vehicle.make} ${vehicle.model}")
+
+                                vehicleDocRef.get().addOnSuccessListener { document ->
+                                    if (document != null) {
+                                        val existingComments = document.get("comments") as? MutableList<Map<String, *>> ?: mutableListOf()
+
+                                        existingComments.add(commentData)
+                                        Log.i("Rustyze", "Existing comments: $existingComments")
+                                        Log.i("Rustyze", "New comment: $commentData")
+
+                                        val updatedVehicleData: MutableMap<String, Any> = HashMap()
+                                        updatedVehicleData["comments"] = existingComments
+
+                                        vehicleDocRef.set(updatedVehicleData)
+                                            .addOnSuccessListener {
+                                                Log.i("Rustyze", "Comment added successfully")
+                                                comments.value = existingComments
+                                                userComment = ""
+                                                stars = 0
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                Log.e("Rustyze", "Error adding comment: ", exception)
+                                            }
+                                    } else {
+                                        val newVehicleData = mapOf(
+                                            "comments" to listOf(commentData)
+                                        )
+                                        vehicleDocRef.set(newVehicleData)
+                                            .addOnSuccessListener {
+                                                Log.i("Rustyze", "Document created and comment added successfully")
+                                                comments.value =
+                                                    listOf(commentData).toMutableList()
+                                                userComment = ""
+                                                stars = 0
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                Log.e("Rustyze", "Error creating document and adding comment: ", exception)
+                                            }
                                     }
+                                }
                             }
                         },
                         modifier = Modifier.padding(start = 8.dp)
