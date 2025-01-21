@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                 // Récupération des données si la liste est vide
                 LaunchedEffect(Unit) {
                     if (apiList.isEmpty()) {
-                        val apiUrl = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/all-vehicles-model/records?limit=100"
+                        val apiUrl = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/all-vehicles-model/records?limit=50"
                         try {
                             val response = withContext(Dispatchers.IO) {
                                 val url = URI.create(apiUrl).toURL()

@@ -39,4 +39,9 @@
 
     <string name="loginGoogle">Connexion avec Google</string>
     <string name="loginX">Connexion avec X</string>
+
+    <string name="share">Découvrez ce véhicule sur Rustyze</string>
+    <string name="shareBy">Partager via</string>
+    <string name="shareVisit">Visitez notre application pour plus de détails.</string>
+
 </resources>

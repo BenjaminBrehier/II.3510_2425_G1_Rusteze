@@ -38,4 +38,8 @@
 
     <string name="loginGoogle">Login with Google</string>
     <string name="loginX">Login with X</string>
+
+    <string name="share">Discover this vehicle on Rustyze</string>
+    <string name="shareBy">Share by</string>
+    <string name="shareVisit">Visit our app for more details.</string>
 </resources>

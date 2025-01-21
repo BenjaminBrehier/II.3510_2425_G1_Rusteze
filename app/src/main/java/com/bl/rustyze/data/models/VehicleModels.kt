@@ -28,7 +28,7 @@ fun parseVehicles(jsonResponse: String): List<Vehicle> {
         val make = result.optString("make", "Unknown")
         val model = result.optString("model", "Unknown")
         val year = result.optInt("year", 0)
-        val fuelType = result.optString("fuelType", "Unknown")
+        val fuelType = result.optString("fueltype", "Unknown")
         val cylinders = result.optInt("cylinders", 0)
         val trany = result.optString("trany", "Unknown")
         val comb08 = result.optInt("comb08", 0)

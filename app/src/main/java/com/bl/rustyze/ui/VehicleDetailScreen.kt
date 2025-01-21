@@ -1,6 +1,7 @@
 package com.bl.rustyze.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
@@ -42,6 +45,7 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
     val mAuth = FirebaseAuth.getInstance()
     val user: FirebaseUser? = mAuth.currentUser
     val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    var context = LocalContext.current
 
     if (user != null) {
     // Add the vehicle to the user's last seen list
@@ -87,14 +91,58 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
         }
     }
 
+    val shareMessage = "${stringResource(R.string.share)} : ${vehicle.make} ${vehicle.model}\n" +
+            "${stringResource(R.string.specsYear)}  : ${vehicle.year}\n" +
+            "${stringResource(R.string.specsFuel)}  : ${vehicle.fuelType ?: "N/A"}\n" +
+            "${stringResource(R.string.specsTransmission)}  : ${vehicle.trany ?: "N/A"}\n\n" +
+            "${stringResource(R.string.rustyMeter)}  : $rustyMeterPercentage%\n\n" +
+            "${stringResource(R.string.shareVisit)}\n"
+
+    val shareBy = stringResource(R.string.shareBy)
+
+    fun shareVehicleDetails(context: Context) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(
+                Intent.EXTRA_TEXT,
+                shareMessage
+            )
+        }
+        context.startActivity(Intent.createChooser(shareIntent, shareBy))
+    }
+
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(
+                    text = "${vehicle.make} ${vehicle.model}",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                ) },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            shareVehicleDetails(context)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Partager le véhicule",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            )
+        },
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
                     selected = true,
                     onClick = { navController.navigate("home") },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
-                    label = {Text(stringResource(id = R.string.navHome))}
+                    label = { Text(stringResource(id = R.string.navHome)) }
                 )
             }
         }
@@ -107,15 +155,16 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Header
-            Text(
-                text = "${vehicle.make} ${vehicle.model}",
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+//            Text(
+//                text = "${vehicle.make} ${vehicle.model}",
+//                style = MaterialTheme.typography.headlineLarge.copy(
+//                    color = MaterialTheme.colorScheme.primary,
+//                    fontWeight = FontWeight.Bold
+//                ),
+//                modifier = Modifier.padding(bottom = 8.dp)
+//            )
 
+            Spacer(modifier = Modifier.height(50.dp))
             // Vehicle Details
             Card(
                 modifier = Modifier

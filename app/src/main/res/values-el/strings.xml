@@ -39,4 +39,8 @@
 
     <string name="loginGoogle">Σύνδεση με Google</string>
     <string name="loginX">Σύνδεση με X</string>
+
+    <string name="share">Ανακαλύψτε αυτό το όχημα στο Rustyze</string>
+    <string name="shareBy">Κοινοποίηση μέσω</string>
+    <string name="shareVisit">Επισκεφθείτε την εφαρμογή μας για περισσότερες λεπτομέρειες.</string>
 </resources>
