@@ -9,8 +9,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -43,11 +45,13 @@ private var mAuth: FirebaseAuth? = null
 fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
     var expanded by remember { mutableStateOf(false) }
     val vehiclesLastSeenData = remember { mutableStateOf(emptyList<Map<String, String>>()) }
+    val topRatedVehicles = remember { mutableStateOf(emptyList<Map<String, String>>()) }  // Liste des véhicules triés par rustyMeter
     mAuth = FirebaseAuth.getInstance()
     val user: FirebaseUser? = mAuth!!.currentUser
     val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     if (user != null) {
+        // Récupération des véhicules vus dernièrement
         db.collection("users").document(user.uid).get()
             .addOnSuccessListener { document ->
                 if (document != null) {
@@ -55,7 +59,6 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                     val vehicles = mutableListOf<Map<String, String>>()
 
                     vehicleIds.forEach { vehicleId ->
-                        Log.i("Rustyze", "vehicleId: $vehicleId")
                         val vehicleDocRef = db.collection("vehicles").document(vehicleId)
 
                         vehicleDocRef.get().addOnSuccessListener { document ->
@@ -85,10 +88,7 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                                         "rustyMeter" to "$rustyMeterPercentage%"
                                     )
                                 )
-                                Log.i("Rustyze", "vehicles: $vehicles")
                                 vehiclesLastSeenData.value = vehicles
-                            } else {
-                                Log.w("Rustyze", "Document for vehicleId $vehicleId not found")
                             }
                         }.addOnFailureListener { exception ->
                             Log.e("Rustyze", "Error fetching document for vehicleId $vehicleId", exception)
@@ -96,21 +96,51 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                     }
                 }
             }
-    }
 
+        // Récupérer tous les véhicules pour calculer et trier le rustyMeter
+        db.collection("vehicles").get()
+            .addOnSuccessListener { result ->
+                val allVehicles = mutableListOf<Map<String, String>>()
+
+                for (document in result) {
+                    val fetchedComments =
+                        document.get("comments") as? MutableList<Map<String, *>> ?: mutableListOf()
+                    var totalStars = 0
+                    var totalComments = 0
+
+                    for (comment in fetchedComments) {
+                        val commentStars = comment["stars"] as? Long
+                        if (commentStars != null && commentStars in 0..5) {
+                            totalStars += commentStars.toInt()
+                            totalComments++
+                        }
+                    }
+
+                    val rustyMeterPercentage = if (totalComments > 0) {
+                        (totalStars * 100) / (totalComments * 5)
+                    } else {
+                        0
+                    }
+
+                    allVehicles.add(
+                        mapOf(
+                            "name" to document.id,
+                            "rustyMeter" to "$rustyMeterPercentage%"
+                        )
+                    )
+                }
+
+                // Trier les véhicules par rustyMeter
+                allVehicles.sortByDescending { it["rustyMeter"]?.removeSuffix("%")?.toIntOrNull() ?: 0 }
+                topRatedVehicles.value = allVehicles
+            }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Rustyze") },
                 actions = {
-                    IconButton(onClick = {
-                        navController.navigate("search")
-                    }) {
-                        Icon(Icons.Filled.Search, contentDescription = "Search")
-                    }
-
-                    // Profile icon with dropdown menu
                     Box(
                         modifier = Modifier
                             .wrapContentSize(Alignment.TopEnd)
@@ -137,7 +167,6 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                                     firebaseAuth.signOut()
                                     Toast.makeText(navController.context, "Logged out", Toast.LENGTH_SHORT).show()
 
-                                    // Redirect to login screen
                                     val intent = Intent(navController.context, MainActivity::class.java)
                                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                                     startActivity(navController.context, intent, null)
@@ -155,6 +184,18 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                     onClick = { navController.navigate("home") },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
                     label = { Text(stringResource(id = R.string.navHome)) }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { navController.navigate("search") },
+                    icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    label = { Text(stringResource(id = R.string.navSearch)) }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { navController.navigate("comments") },
+                    icon = { Icon(Icons.Default.Email, contentDescription = "my comments") },
+                    label = { Text(stringResource(id = R.string.navComments)) }
                 )
             }
         }
@@ -182,10 +223,15 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
                         ),
                     content = {
                         LazyRow {
-                            items(5) { index ->
+                            // Display top 10 rated vehicles
+                            items(topRatedVehicles.value.take(10)) { vehicle ->
+                                val vehicleId = vehicle["name"] ?: "Unknown"
+                                val rustyMeter = vehicle["rustyMeter"] ?: "Unknown"
                                 TopRatedCard(
-                                    rank = index + 1,
-                                    imageRes = R.drawable.ic_launcher_foreground
+                                    rank = topRatedVehicles.value.indexOf(vehicle) + 1,
+                                    vehicleId = vehicleId,
+                                    rustyMeter = rustyMeter,
+                                    imageRes = R.drawable.ic_launcher_foreground // Replace with vehicle image
                                 )
                             }
                         }
@@ -216,10 +262,10 @@ fun HomeScreen(navController: NavController, firebaseAuth: FirebaseAuth) {
 }
 
 @Composable
-fun TopRatedCard(rank: Int, imageRes: Int) {
+fun TopRatedCard(rank: Int, vehicleId: String, rustyMeter: String, imageRes: Int) {
     Box(
         modifier = Modifier
-            .size(100.dp)
+            .size(150.dp)
             .padding(4.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -229,9 +275,24 @@ fun TopRatedCard(rank: Int, imageRes: Int) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-        Text(
-            text = "$rank",
-            style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text(
+                text = "$rank",
+                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+            )
+            Text(
+                text = vehicleId,
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Black)
+            )
+            Text(
+                text = rustyMeter,
+                style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
+            )
+        }
     }
 }
+

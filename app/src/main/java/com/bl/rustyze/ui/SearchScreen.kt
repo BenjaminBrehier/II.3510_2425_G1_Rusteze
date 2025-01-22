@@ -5,13 +5,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.bl.rustyze.R
 import com.bl.rustyze.data.models.Vehicle
 import com.bl.rustyze.data.models.parseVehicles
 import kotlinx.coroutines.Dispatchers
@@ -43,13 +47,25 @@ fun SearchScreen(
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = true,
+                    selected = false,
                     onClick = { navController.navigate("home") },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
-                    label = { Text("Home") }
+                    label = { Text(stringResource(id = R.string.navHome)) }
+                )
+                NavigationBarItem(
+                    selected = true,
+                    onClick = { navController.navigate("search") },
+                    icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    label = { Text(stringResource(id = R.string.navSearch)) }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { navController.navigate("comments") },
+                    icon = { Icon(Icons.Default.Email, contentDescription = "my comments") },
+                    label = { Text(stringResource(id = R.string.navComments)) }
                 )
             }
-        }
+        },
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             TextField(

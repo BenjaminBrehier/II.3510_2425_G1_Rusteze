@@ -11,6 +11,8 @@
 
     <string name="navHome">Home</string>
     <string name="navProfile">Profile</string>
+    <string name="navComments">My comments</string>
+    <string name="navSearch">Search</string>
 
     <string name="seenRecently">Seen Recently</string>
     <string name="topRated">Top Rated</string>
@@ -42,4 +44,7 @@
     <string name="share">Discover this vehicle on Rustyze</string>
     <string name="shareBy">Share by</string>
     <string name="shareVisit">Visit our app for more details.</string>
+
+    <string name="noComments">No comments yet. Be the first to comment!</string>
+    <string name="notificationNewComment">New comment on </string>
 </resources>

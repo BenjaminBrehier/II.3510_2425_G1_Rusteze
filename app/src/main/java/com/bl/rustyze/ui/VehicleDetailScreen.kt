@@ -135,12 +135,13 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
         }
     }
 
+    val notifNewComment = stringResource(R.string.notificationNewComment)
     fun sendNotification(comment: String) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val notification: Notification = Notification.Builder(context, "comment_channel")
-            .setContentTitle("New Comment on ${vehicle.make} ${vehicle.model}")
+            .setContentTitle("${notifNewComment} ${vehicle.make} ${vehicle.model}")
             .setContentText(comment)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
@@ -207,10 +208,22 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = true,
+                    selected = false,
                     onClick = { navController.navigate("home") },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
                     label = { Text(stringResource(id = R.string.navHome)) }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { navController.navigate("search") },
+                    icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    label = { Text(stringResource(id = R.string.navSearch)) }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { navController.navigate("comments") },
+                    icon = { Icon(Icons.Default.Email, contentDescription = "my comments") },
+                    label = { Text(stringResource(id = R.string.navComments)) }
                 )
             }
         }
@@ -284,40 +297,48 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                 )
             )
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxHeight(0.6f)
-                    .padding(vertical = 8.dp)
-            ) {
-                items(comments.value) { comment ->
-                    val author = comment["author"] as? String ?: "Anonymous"
-                    val content = comment["content"] as? String ?: ""
-                    val commentStars = comment["stars"] as? Long ?: 0
+            if (comments.value.isEmpty()) {
+                Text(
+                    text = stringResource(id = R.string.noComments),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                )
+            }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight(0.6f)
+                        .padding(vertical = 8.dp)
+                ) {
+                    items(comments.value) { comment ->
+                        val author = comment["author"] as? String ?: "Anonymous"
+                        val content = comment["content"] as? String ?: ""
+                        val commentStars = comment["stars"] as? Long ?: 0
 
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Text(
-                                text = stringResource(id = R.string.author) + " : $author",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = stringResource(id = R.string.rating) + " : $commentStars ★",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(text = content, style = MaterialTheme.typography.bodySmall)
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(8.dp)) {
+                                Text(
+                                    text = stringResource(id = R.string.author) + " : $author",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.rating) + " : $commentStars ★",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(text = content, style = MaterialTheme.typography.bodySmall)
+                            }
                         }
                     }
                 }
-            }
 
             // Add a comment section
             if (user != null) {

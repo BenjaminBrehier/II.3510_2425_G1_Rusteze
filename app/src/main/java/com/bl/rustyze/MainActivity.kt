@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bl.rustyze.data.models.Vehicle
 import com.bl.rustyze.data.models.parseVehicles
+import com.bl.rustyze.ui.CommentsScreen
 import com.bl.rustyze.ui.HomeScreen
 import com.bl.rustyze.ui.LoginScreen
 import com.bl.rustyze.ui.ProfileScreen
@@ -99,6 +100,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("profile") {
                                 ProfileScreen(navController, firebaseAuth)
+                            }
+                            composable("comments") {
+                                CommentsScreen(navController, firebaseAuth)
                             }
                             composable(
                                 "details/{make}/{model}",
