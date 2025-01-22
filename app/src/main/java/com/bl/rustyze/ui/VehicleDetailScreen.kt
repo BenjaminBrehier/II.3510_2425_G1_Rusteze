@@ -253,17 +253,17 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     VehicleDetailItem(
-                        icon = Icons.Default.CheckCircle,
+                        icon = Icons.Default.DateRange,
                         label = stringResource(id = R.string.specsYear),
                         value = vehicle.year.toString()
                     )
                     VehicleDetailItem(
-                        icon = Icons.Default.Done,
+                        icon = Icons.Default.Warning,
                         label = stringResource(id = R.string.specsFuel),
                         value = vehicle.fuelType ?: "Unknown"
                     )
                     VehicleDetailItem(
-                        icon = Icons.Default.Lock,
+                        icon = Icons.Default.Settings,
                         label = stringResource(id = R.string.specsCylinders),
                         value = vehicle.cylinders?.toString() ?: "N/A"
                     )
@@ -273,7 +273,7 @@ fun VehicleDetailScreen(vehicle: Vehicle, navController: NavController) {
                         value = vehicle.trany ?: "N/A"
                     )
                     VehicleDetailItem(
-                        icon = Icons.Default.Call,
+                        icon = Icons.Default.AddCircle,
                         label = stringResource(id = R.string.specsCombined),
                         value = vehicle.comb08?.toString() ?: "N/A"
                     )

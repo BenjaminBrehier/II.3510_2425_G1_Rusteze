@@ -12,6 +12,8 @@
 
     <string name="navHome">Αρχική</string>
     <string name="navProfile">Προφίλ</string>
+    <string name="navComments">Τα σχόλια μου</string>
+    <string name="navSearch">Αναζήτηση</string>
 
     <string name="seenRecently">Πρόσφατα Εμφανισμένα</string>
     <string name="topRated">Κορυφαία Βαθμολογημένα</string>
@@ -43,4 +45,8 @@
     <string name="share">Ανακαλύψτε αυτό το όχημα στο Rustyze</string>
     <string name="shareBy">Κοινοποίηση μέσω</string>
     <string name="shareVisit">Επισκεφθείτε την εφαρμογή μας για περισσότερες λεπτομέρειες.</string>
+
+    <string name="noComments">Δεν υπάρχουν σχόλια ακόμη. Γίνετε ο πρώτος που θα σχολιάσει!</string>
+    <string name="notificationNewComment">Νέο σχόλιο στο </string>
+
 </resources>
